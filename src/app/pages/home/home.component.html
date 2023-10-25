@@ -1,0 +1,650 @@
+<div class="row">
+  <mat-tab-group dynamicHeight [selectedIndex]="indexTab" (selectedTabChange)="tabChanged($event)">
+    <mat-tab label="PORTADA">
+      <form [formGroup]="coverForm" class="pt-4" (submit)="next(coverForm, 0)">
+        <mat-form-field appearance="outline" class="col-md-6">
+          <mat-label>Fecha</mat-label>
+          <input matInput formControlName="date" type="date">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-6">
+          <mat-label>Ciudad</mat-label>
+          <input matInput formControlName="city">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-6">
+          <mat-label>Empresa</mat-label>
+          <input matInput formControlName="business">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-6">
+          <mat-label>Telefono</mat-label>
+          <input matInput formControlName="cellphone">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-12">
+          <mat-label>Nombre del software</mat-label>
+          <input matInput formControlName="softwareName">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-12">
+          <mat-label>Objetivos Generales del software</mat-label>
+          <textarea matInput formControlName="generalObjectives"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-md-12">
+          <mat-label>Objetivos Específicos del software</mat-label>
+          <textarea matInput formControlName="specificObjectives"></textarea>
+        </mat-form-field>
+
+        <div class="col-md-12 pt-2">
+          <h3>PARTICIPANTES</h3>
+        </div>
+        <div>
+          <form [formGroup]="userForm" (submit)="addPerson()">
+            <div class="col-md-12 d-flex px-0 pt-2">
+              <mat-form-field appearance="outline" class="col-md-4">
+                <mat-label>Cargo</mat-label>
+                <input matInput formControlName="role">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="col-md-4">
+                <mat-label>Nombre</mat-label>
+                <input matInput formControlName="name">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="col-md-4">
+                <mat-label>Firma</mat-label>
+                <input matInput formControlName="sign">
+              </mat-form-field>
+
+            </div>
+            <div class="col-md-12 d-flex justify-content-end pb-2">
+              <button class="btn btn-success">Agregar</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="col-md-12 d-flex justify-content-end pb-2" *ngIf="person.length > 0">
+          <div class="col-md-4"><b>Cargo</b></div>
+          <div class="col-md-4"><b>Nombre</b></div>
+          <div class="col-md-4"><b>Firma</b></div>
+          <div class="col-md-4"><b>Opciones</b></div>
+        </div>
+
+        <ng-container *ngIf="person.length > 0">
+          <div *ngFor="let item of person; index as i" class="col-md-12 d-flex justify-content-end pb-2">
+            <div class="col-md-4">{{item.role}}</div>
+            <div class="col-md-4">{{item.name}}</div>
+            <div class="col-md-4">{{item.sign}}</div>
+            <div class="col-md-4"><button (click)="deletePerson(i)" mat-raised-button color="warn">Eliminar</button>
+            </div>
+          </div>
+        </ng-container>
+
+        <div class="col-md-12 d-flex justify-content-end pb-2 pt-4">
+          <button class="btn btn-secondary" [disabled]="!coverForm.valid && person.length == 0">Siguiente</button>
+        </div>
+
+      </form>
+
+    </mat-tab>
+    <mat-tab label="FUNCIONALIDAD">
+      <form [formGroup]="functionForm" (submit)="next(functionForm, 1)" class="pt-4">
+        <div class="row">
+          <div class="col-md-1"><b>CÓDIGO</b></div>
+          <div class="col-md-2"><b>ÍTEM</b></div>
+          <div class="col-md-5"><b>DESCRIPCIÓN condición de Normalidad </b></div>
+          <div class="col-md-1"><b>VALOR</b></div>
+          <div class="col-md-3"><b>OBSERVACIONES</b></div>
+        </div>
+
+        <div class="row pt-2" *ngFor="let item of menu.funcionalidad">
+          <div class="col-md-1">
+            <p>{{item.codigo}}</p>
+          </div>
+          <div class="col-md-2">
+            <p>{{item.item}}</p>
+          </div>
+          <div class="col-md-5">
+            <p>{{item.descripcion}}</p>
+          </div>
+          <mat-form-field appearance="outline" class="col-md-1">
+            <mat-label>Valor</mat-label>
+            <input matInput [formControlName]="item.valor">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="col-md-3">
+            <mat-label>Observaciones</mat-label>
+            <textarea matInput [formControlName]="item.observacion"></textarea>
+          </mat-form-field>
+
+        </div>
+        <div class="row">
+          <div class="col-md-8 d-flex justify-content-end">
+            <div>
+              <p class="d-flex justify-content-end"><b>TOTAL PUNTOS</b></p>
+              <p><b>Porcentaje total resultado de FUNCIONALIDAD</b></p>
+              <br/>
+              <p>CRITERIO DEL VALOR DE LA EVALUACION</p>
+            </div>
+          </div>
+          <div class="col-md-1 d-flex justify-content-center">
+            <div>
+              <p><b>{{calculatePoints(functionForm, 'funcionalidad')}}</b></p>
+              <p><b>{{calculatePorcent(calculatePoints(functionForm, 'funcionalidad'), 15)}} %</b></p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <p><b>DE 15</b></p>
+            <p> ---- </p>
+            <br/>
+            <p>0 No cumple de 0% a un 30%</p>
+            <p>1 Cumple de 31% a 50%</p>
+            <p>2 Cumple de 51% a 89%</p>
+            <p>3 Cumple con o mas del 90%</p>
+          </div>
+        </div>
+
+        <div class="col-md-12 d-flex justify-content-end pb-2 pt-4">
+          <button class="btn btn-secondary" [disabled]="!functionForm.valid">Siguiente</button>
+        </div>
+      </form>
+    </mat-tab>
+
+    <mat-tab label="FIABILIDAD">
+      <form [formGroup]="fiabilityForm" (submit)="next(fiabilityForm, 2)" class="pt-4">
+        <div class="row">
+          <div class="col-md-1"><b>CÓDIGO</b></div>
+          <div class="col-md-2"><b>ÍTEM</b></div>
+          <div class="col-md-5"><b>DESCRIPCIÓN condición de Normalidad </b></div>
+          <div class="col-md-1"><b>VALOR</b></div>
+          <div class="col-md-3"><b>OBSERVACIONES</b></div>
+        </div>
+
+        <div class="row pt-2" *ngFor="let item of menu.fiabilidad">
+          <div class="col-md-1">
+            <p>{{item.codigo}}</p>
+          </div>
+          <div class="col-md-2">
+            <p>{{item.item}}</p>
+          </div>
+          <div class="col-md-5">
+            <p>{{item.descripcion}}</p>
+          </div>
+          <mat-form-field appearance="outline" class="col-md-1">
+            <mat-label>Valor</mat-label>
+            <input matInput [formControlName]="item.valor">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="col-md-3">
+            <mat-label>Observaciones</mat-label>
+            <textarea matInput [formControlName]="item.observacion"></textarea>
+          </mat-form-field>
+
+        </div>
+        <div class="row">
+          <div class="col-md-8 d-flex justify-content-end">
+            <div>
+              <p class="d-flex justify-content-end"><b>TOTAL PUNTOS</b></p>
+              <p><b>Porcentaje total resultado de FIABILIDAD</b></p>
+              <br/>
+              <p>CRITERIO DEL VALOR DE LA EVALUACION</p>
+            </div>
+          </div>
+          <div class="col-md-1 d-flex justify-content-center">
+            <div>
+              <p><b>{{calculatePoints(fiabilityForm, 'fiabilidad')}}</b></p>
+              <p><b>{{calculatePorcent(calculatePoints(fiabilityForm, 'fiabilidad'), 12)}} %</b></p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <p><b>DE 12</b></p>
+            <p> ---- </p>
+            <br/>
+            <p>0 No cumple de 0% a un 30%</p>
+            <p>1 Cumple de 31% a 50%</p>
+            <p>2 Cumple de 51% a 89%</p>
+            <p>3 Cumple con o mas del 90%</p>
+          </div>
+        </div>
+
+        <div class="col-md-12 d-flex justify-content-end pb-2 pt-4">
+          <button class="btn btn-secondary" [disabled]="!fiabilityForm.valid">Siguiente</button>
+        </div>
+      </form>
+    </mat-tab>
+    <mat-tab label="USABILIDAD">
+      <form [formGroup]="usabilityForm" (submit)="next(usabilityForm, 3)" class="pt-4">
+        <div class="row">
+          <div class="col-md-1"><b>CÓDIGO</b></div>
+          <div class="col-md-2"><b>ÍTEM</b></div>
+          <div class="col-md-5"><b>DESCRIPCIÓN condición de Normalidad </b></div>
+          <div class="col-md-1"><b>VALOR</b></div>
+          <div class="col-md-3"><b>OBSERVACIONES</b></div>
+        </div>
+
+        <div class="row pt-2" *ngFor="let item of menu.usabilidad">
+          <div class="col-md-1">
+            <p>{{item.codigo}}</p>
+          </div>
+          <div class="col-md-2">
+            <p>{{item.item}}</p>
+          </div>
+          <div class="col-md-5">
+            <p>{{item.descripcion}}</p>
+          </div>
+          <mat-form-field appearance="outline" class="col-md-1">
+            <mat-label>Valor</mat-label>
+            <input matInput [formControlName]="item.valor">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="col-md-3">
+            <mat-label>Observaciones</mat-label>
+            <textarea matInput [formControlName]="item.observacion"></textarea>
+          </mat-form-field>
+
+        </div>
+        <div class="row">
+          <div class="col-md-8 d-flex justify-content-end">
+            <div>
+              <p class="d-flex justify-content-end"><b>TOTAL PUNTOS</b></p>
+              <p><b>Porcentaje total resultado de FUNCIONALIDAD</b></p>
+              <br/>
+              <p>CRITERIO DEL VALOR DE LA EVALUACION</p>
+            </div>
+          </div>
+          <div class="col-md-1 d-flex justify-content-center">
+            <div>
+              <p><b>{{calculatePoints(usabilityForm, 'usabilidad')}}</b></p>
+              <p><b>{{calculatePorcent(calculatePoints(usabilityForm, 'usabilidad'), 15)}} %</b></p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <p><b>DE 15</b></p>
+            <p> ---- </p>
+            <br/>
+            <p>0 No cumple de 0% a un 30%</p>
+            <p>1 Cumple de 31% a 50%</p>
+            <p>2 Cumple de 51% a 89%</p>
+            <p>3 Cumple con o mas del 90%</p>
+          </div>
+        </div>
+
+        <div class="col-md-12 d-flex justify-content-end pb-2 pt-4">
+          <button class="btn btn-secondary" [disabled]="!usabilityForm.valid">Siguiente</button>
+        </div>
+      </form>
+    </mat-tab>
+    <mat-tab label="EFICIENCIA">
+      <form [formGroup]="efficiencyForm" (submit)="next(efficiencyForm, 4)" class="pt-4">
+        <div class="row">
+          <div class="col-md-1"><b>CÓDIGO</b></div>
+          <div class="col-md-2"><b>ÍTEM</b></div>
+          <div class="col-md-5"><b>DESCRIPCIÓN condición de Normalidad </b></div>
+          <div class="col-md-1"><b>VALOR</b></div>
+          <div class="col-md-3"><b>OBSERVACIONES</b></div>
+        </div>
+
+        <div class="row pt-2" *ngFor="let item of menu.eficiencia">
+          <div class="col-md-1">
+            <p>{{item.codigo}}</p>
+          </div>
+          <div class="col-md-2">
+            <p>{{item.item}}</p>
+          </div>
+          <div class="col-md-5">
+            <p>{{item.descripcion}}</p>
+          </div>
+          <mat-form-field appearance="outline" class="col-md-1">
+            <mat-label>Valor</mat-label>
+            <input matInput [formControlName]="item.valor">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="col-md-3">
+            <mat-label>Observaciones</mat-label>
+            <textarea matInput [formControlName]="item.observacion"></textarea>
+          </mat-form-field>
+
+        </div>
+        <div class="row">
+          <div class="col-md-8 d-flex justify-content-end">
+            <div>
+              <p class="d-flex justify-content-end"><b>TOTAL PUNTOS</b></p>
+              <p><b>Porcentaje total resultado de FUNCIONALIDAD</b></p>
+              <br/>
+              <p>CRITERIO DEL VALOR DE LA EVALUACION</p>
+            </div>
+          </div>
+          <div class="col-md-1 d-flex justify-content-center">
+            <div>
+              <p><b>{{calculatePoints(efficiencyForm, 'eficiencia')}}</b></p>
+              <p><b>{{calculatePorcent(calculatePoints(efficiencyForm, 'eficiencia'), 9)}} %</b></p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <p><b>DE 9</b></p>
+            <p> ---- </p>
+            <br/>
+            <p>0 No cumple de 0% a un 30%</p>
+            <p>1 Cumple de 31% a 50%</p>
+            <p>2 Cumple de 51% a 89%</p>
+            <p>3 Cumple con o mas del 90%</p>
+          </div>
+        </div>
+
+        <div class="col-md-12 d-flex justify-content-end pb-2 pt-4">
+          <button class="btn btn-secondary" [disabled]="!efficiencyForm.valid">Siguiente</button>
+        </div>
+      </form>
+    </mat-tab>
+    <mat-tab label="CAPACIDAD DE MANTENIMIENTO">
+      <form [formGroup]="maintenanceForm" (submit)="next(maintenanceForm, 5)" class="pt-4">
+        <div class="row">
+          <div class="col-md-1"><b>CÓDIGO</b></div>
+          <div class="col-md-2"><b>ÍTEM</b></div>
+          <div class="col-md-5"><b>DESCRIPCIÓN condición de Normalidad </b></div>
+          <div class="col-md-1"><b>VALOR</b></div>
+          <div class="col-md-3"><b>OBSERVACIONES</b></div>
+        </div>
+
+        <div class="row pt-2" *ngFor="let item of menu.mantenimiento">
+          <div class="col-md-1">
+            <p>{{item.codigo}}</p>
+          </div>
+          <div class="col-md-2">
+            <p>{{item.item}}</p>
+          </div>
+          <div class="col-md-5">
+            <p>{{item.descripcion}}</p>
+          </div>
+          <mat-form-field appearance="outline" class="col-md-1">
+            <mat-label>Valor</mat-label>
+            <input matInput [formControlName]="item.valor">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="col-md-3">
+            <mat-label>Observaciones</mat-label>
+            <textarea matInput [formControlName]="item.observacion"></textarea>
+          </mat-form-field>
+
+        </div>
+        <div class="row">
+          <div class="col-md-8 d-flex justify-content-end">
+            <div>
+              <p class="d-flex justify-content-end"><b>TOTAL PUNTOS</b></p>
+              <p><b>Porcentaje total resultado de FUNCIONALIDAD</b></p>
+              <br/>
+              <p>CRITERIO DEL VALOR DE LA EVALUACION</p>
+            </div>
+          </div>
+          <div class="col-md-1 d-flex justify-content-center">
+            <div>
+              <p><b>{{calculatePoints(maintenanceForm, 'mantenimiento')}}</b></p>
+              <p><b>{{calculatePorcent(calculatePoints(maintenanceForm, 'mantenimiento'), 15)}} %</b></p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <p><b>DE 15</b></p>
+            <p> ---- </p>
+            <br/>
+            <p>0 No cumple de 0% a un 30%</p>
+            <p>1 Cumple de 31% a 50%</p>
+            <p>2 Cumple de 51% a 89%</p>
+            <p>3 Cumple con o mas del 90%</p>
+          </div>
+        </div>
+
+        <div class="col-md-12 d-flex justify-content-end pb-2 pt-4">
+          <button class="btn btn-secondary" [disabled]="!maintenanceForm.valid">Siguiente</button>
+        </div>
+      </form>
+    </mat-tab>
+    <mat-tab label="PORTABILIDAD">
+      <form [formGroup]="portabilityForm" (submit)="next(portabilityForm, 6)" class="pt-4">
+        <div class="row">
+          <div class="col-md-1"><b>CÓDIGO</b></div>
+          <div class="col-md-2"><b>ÍTEM</b></div>
+          <div class="col-md-5"><b>DESCRIPCIÓN condición de Normalidad </b></div>
+          <div class="col-md-1"><b>VALOR</b></div>
+          <div class="col-md-3"><b>OBSERVACIONES</b></div>
+        </div>
+
+        <div class="row pt-2" *ngFor="let item of menu.portabilidad">
+          <div class="col-md-1">
+            <p>{{item.codigo}}</p>
+          </div>
+          <div class="col-md-2">
+            <p>{{item.item}}</p>
+          </div>
+          <div class="col-md-5">
+            <p>{{item.descripcion}}</p>
+          </div>
+          <mat-form-field appearance="outline" class="col-md-1">
+            <mat-label>Valor</mat-label>
+            <input matInput [formControlName]="item.valor">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="col-md-3">
+            <mat-label>Observaciones</mat-label>
+            <textarea matInput [formControlName]="item.observacion"></textarea>
+          </mat-form-field>
+
+        </div>
+        <div class="row">
+          <div class="col-md-8 d-flex justify-content-end">
+            <div>
+              <p class="d-flex justify-content-end"><b>TOTAL PUNTOS</b></p>
+              <p><b>Porcentaje total resultado de FUNCIONALIDAD</b></p>
+              <br/>
+              <p>CRITERIO DEL VALOR DE LA EVALUACION</p>
+            </div>
+          </div>
+          <div class="col-md-1 d-flex justify-content-center">
+            <div>
+              <p><b>{{calculatePoints(portabilityForm, 'portabilidad')}}</b></p>
+              <p><b>{{calculatePorcent(calculatePoints(portabilityForm, 'portabilidad'), 15)}} %</b></p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <p><b>DE 15</b></p>
+            <p> ---- </p>
+            <br/>
+            <p>0 No cumple de 0% a un 30%</p>
+            <p>1 Cumple de 31% a 50%</p>
+            <p>2 Cumple de 51% a 89%</p>
+            <p>3 Cumple con o mas del 90%</p>
+          </div>
+        </div>
+
+        <div class="col-md-12 d-flex justify-content-end pb-2 pt-4">
+          <button class="btn btn-secondary" [disabled]="!portabilityForm.valid">Siguiente</button>
+        </div>
+      </form>
+    </mat-tab>
+    <mat-tab label="CALIDAD EN USO">
+      <form [formGroup]="qualityForm" (submit)="next(qualityForm, 7)" class="pt-4">
+        <div class="row">
+          <div class="col-md-1"><b>CÓDIGO</b></div>
+          <div class="col-md-2"><b>ÍTEM</b></div>
+          <div class="col-md-5"><b>DESCRIPCIÓN condición de Normalidad </b></div>
+          <div class="col-md-1"><b>VALOR</b></div>
+          <div class="col-md-3"><b>OBSERVACIONES</b></div>
+        </div>
+
+        <div class="row pt-2" *ngFor="let item of menu.calidad">
+          <div class="col-md-1">
+            <p>{{item.codigo}}</p>
+          </div>
+          <div class="col-md-2">
+            <p>{{item.item}}</p>
+          </div>
+          <div class="col-md-5">
+            <p>{{item.descripcion}}</p>
+          </div>
+          <mat-form-field appearance="outline" class="col-md-1">
+            <mat-label>Valor</mat-label>
+            <input matInput [formControlName]="item.valor">
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="col-md-3">
+            <mat-label>Observaciones</mat-label>
+            <textarea matInput [formControlName]="item.observacion"></textarea>
+          </mat-form-field>
+
+        </div>
+        <div class="row">
+          <div class="col-md-8 d-flex justify-content-end">
+            <div>
+              <p class="d-flex justify-content-end"><b>TOTAL PUNTOS</b></p>
+              <p><b>Porcentaje total resultado de FUNCIONALIDAD</b></p>
+              <br/>
+              <p>CRITERIO DEL VALOR DE LA EVALUACION</p>
+            </div>
+          </div>
+          <div class="col-md-1 d-flex justify-content-center">
+            <div>
+              <p><b>{{calculatePoints(qualityForm, 'calidad')}}</b></p>
+              <p><b>{{calculatePorcent(calculatePoints(qualityForm, 'calidad'), 18)}} %</b></p>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <p><b>DE 18</b></p>
+            <p> ---- </p>
+            <br/>
+            <p>0 No cumple de 0% a un 30%</p>
+            <p>1 Cumple de 31% a 50%</p>
+            <p>2 Cumple de 51% a 89%</p>
+            <p>3 Cumple con o mas del 90%</p>
+          </div>
+        </div>
+
+        <div class="col-md-12 d-flex justify-content-end pb-2 pt-4">
+          <button class="btn btn-secondary" [disabled]="!qualityForm.valid">Siguiente</button>
+        </div>
+      </form>
+    </mat-tab>
+    <mat-tab label="RESULTADOS">
+      <div class="row pt-3">
+        <div class="col-md-1"><b>CÓDIGO</b></div>
+        <div class="col-md-2"><b>ÍTEM</b></div>
+        <div class="col-md-4"><b>DESCRIPCIÓN condición de Normalidad </b></div>
+        <div class="col-md-1"><b>VALOR</b></div>
+        <div class="col-md-1"><b>MAXIMO</b></div>
+        <div class="col-md-1"><b>% RESUL</b></div>
+        <div class="col-md-1"><b>MAXIMO</b></div>
+        <div class="col-md-1"><b>% GOBAL</b></div>
+      </div>
+      <div class="row pt-2">
+        <div class="col-md-1"><p>1</p></div>
+        <div class="col-md-2"><p>FUNCIONALIDAD</p></div>
+        <div class="col-md-4"><p>La capacidad del software para proveer las funciones que satisfacen las
+        necesidades explícitas e implícitas cuando el software se utiliza bajo
+        condiciones específicas</p></div>
+        <div class="col-md-1" #funcionalidadPuntos>{{calculatePoints(functionForm, 'funcionalidad')}}</div>
+        <div class="col-md-1">15</div>
+        <div class="col-md-1">{{calculatePorcent(calculatePoints(functionForm, 'funcionalidad'), 15)}} %</div>
+        <div class="col-md-1">14.00 %</div>
+        <div class="col-md-1" #funcionalidadPorcentaje>{{calculatePorcentGob(calculatePorcent(calculatePoints(functionForm, 'funcionalidad'), 15), 14)}} %</div>
+      </div>
+
+      <div class="row pt-2">
+        <div class="col-md-1"><p>2</p></div>
+        <div class="col-md-2"><p>FIABILIDAD</p></div>
+        <div class="col-md-4"><p>La capacidad del software para mantener un nivel específico de
+          funcionamiento cuando se está utilizando bajo condiciones especificadas </p></div>
+        <div class="col-md-1" #fiablidadPuntos>{{calculatePoints(fiabilityForm, 'fiabilidad')}}</div>
+        <div class="col-md-1">12</div>
+        <div class="col-md-1">{{calculatePorcent(calculatePoints(fiabilityForm, 'fiabilidad'), 12)}} %</div>
+        <div class="col-md-1">14.00 %</div>
+        <div class="col-md-1" #fiablidadPorcentaje>{{calculatePorcentGob(calculatePorcent(calculatePoints(fiabilityForm, 'fiabilidad'), 12), 14)}} %</div>
+      </div>
+
+      <div class="row pt-2">
+        <div class="col-md-1"><p>3</p></div>
+        <div class="col-md-2"><p>USABILIDAD</p></div>
+        <div class="col-md-4"><p>La capacidad del software de ser entendido, aprendido, usado y atractivo al
+          usuario, cuando es utilizado bajo las condiciones especificadas. </p></div>
+        <div class="col-md-1" #usabilidadPuntos>{{calculatePoints(usabilityForm, 'usabilidad')}}</div>
+        <div class="col-md-1">15</div>
+        <div class="col-md-1">{{calculatePorcent(calculatePoints(usabilityForm, 'usabilidad'), 15)}} %</div>
+        <div class="col-md-1">15.00 %</div>
+        <div class="col-md-1" #usabilidadPorcentaje>{{calculatePorcentGob(calculatePorcent(calculatePoints(usabilityForm, 'usabilidad'), 15), 15)}} %</div>
+      </div>
+
+      <div class="row pt-2">
+        <div class="col-md-1"><p>4</p></div>
+        <div class="col-md-2"><p>EFICIENCIA</p></div>
+        <div class="col-md-4"><p>La capacidad del software para proveer un desempeño adecuado, de
+          acuerdo a la cantidad de recursos utilizados y bajo las condiciones
+          planteadas.</p></div>
+        <div class="col-md-1" #eficienciaPuntos>{{calculatePoints(efficiencyForm, 'eficiencia')}}</div>
+        <div class="col-md-1">9</div>
+        <div class="col-md-1">{{calculatePorcent(calculatePoints(efficiencyForm, 'eficiencia'), 9)}} %</div>
+        <div class="col-md-1">15.00 %</div>
+        <div class="col-md-1" #eficienciaPorcentaje>{{calculatePorcentGob(calculatePorcent(calculatePoints(efficiencyForm, 'eficiencia'), 9), 15)}} %</div>
+      </div>
+
+      <div class="row pt-2">
+        <div class="col-md-1"><p>5</p></div>
+        <div class="col-md-2"><p>CAPACIDAD DE MANTENIMIENTO</p></div>
+        <div class="col-md-4"><p>Capacidad del software para ser modificado. Las modificaciones pueden
+          incluir correcciones, mejoras o adaptación del software a cambios en el
+          entorno, y especificaciones de requerimientos funcionales.
+          </p></div>
+        <div class="col-md-1" #mantenimientoPuntos>{{calculatePoints(maintenanceForm, 'mantenimiento')}}</div>
+        <div class="col-md-1">15</div>
+        <div class="col-md-1">{{calculatePorcent(calculatePoints(maintenanceForm, 'mantenimiento'), 15)}} %</div>
+        <div class="col-md-1">14.00 %</div>
+        <div class="col-md-1" #mantenimientoPorcentaje>{{calculatePorcentGob(calculatePorcent(calculatePoints(maintenanceForm, 'mantenimiento'), 15), 14)}} %</div>
+      </div>
+
+      <div class="row pt-2">
+        <div class="col-md-1"><p>6</p></div>
+        <div class="col-md-2"><p>PORTABILIDAD</p></div>
+        <div class="col-md-4"><p>La capacidad del software para ser trasladado de un entorno a otro. El
+          entorno puede incluir entornos organizacionales, de hardware o de software
+          </p></div>
+        <div class="col-md-1" #portabilidadPuntos>{{calculatePoints(portabilityForm, 'portabilidad')}}</div>
+        <div class="col-md-1">15</div>
+        <div class="col-md-1">{{calculatePorcent(calculatePoints(portabilityForm, 'portabilidad'), 15)}} %</div>
+        <div class="col-md-1">14.00 %</div>
+        <div class="col-md-1" #portabilidadPorcentaje>{{calculatePorcentGob(calculatePorcent(calculatePoints(portabilityForm, 'portabilidad'), 15), 14)}} %</div>
+      </div>
+
+      <div class="row pt-2">
+        <div class="col-md-1"><p>7</p></div>
+        <div class="col-md-2"><p>CALIDAD EN USO</p></div>
+        <div class="col-md-4"><p>La capacidad del software para permitirles a usuarios específicos lograr las
+          metas propuestas con eficacia, productividad, seguridad y satisfacción,
+          en contextos especificados de uso.
+          </p></div>
+        <div class="col-md-1" #calidadPuntos>{{calculatePoints(qualityForm, 'calidad')}}</div>
+        <div class="col-md-1">18</div>
+        <div class="col-md-1">{{calculatePorcent(calculatePoints(qualityForm, 'calidad'), 18)}} %</div>
+        <div class="col-md-1">14.00 %</div>
+        <div class="col-md-1" #calidadPorcentaje>{{calculatePorcentGob(calculatePorcent(calculatePoints(qualityForm, 'calidad'), 18), 14)}} %</div>
+      </div>
+
+      <div class="row pt-2">
+        <div class="col-md-1"><p></p></div>
+        <div class="col-md-2"><p></p></div>
+        <div class="col-md-4 text-end"><p><b>TOTAL PUNTAJE</b></p></div>
+        <div class="col-md-1"><b>{{calculateTotalPoints()}}</b></div>
+        <div class="col-md-1"><b>DE 99</b></div>
+        <div class="col-md-1"></div>
+        <div class="col-md-1"><b>100%</b></div>
+        <div class="col-md-1" 
+        [style.color]="colorTotal()"
+        ><b>{{calculatePorcentTotalGob()}} %</b></div>
+      </div>
+
+      <div class="row pt-2">
+        <div class="col-md-1"><p></p></div>
+        <div class="col-md-2"><p></p></div>
+        <div class="col-md-4 text-end">
+          <p><b>RESULTADO DEL EJERCICIO</b></p>
+          <p style="color:#e31e17;"><b>0 a 30 % DEFICIENTE</b></p>
+          <p style="color:#952d6a;"><b>31 A 50% INSUFICIENTE</b></p>
+          <p style="color:#7b8800;"><b>51 A 70% ACEPTABLE</b></p>
+          <p style="color:#3f7f80;"><b>71 A 89% SOBRESALIENTE</b></p>
+          <p style="color:#436566;"><b> MAS DE 90% EXCELENTE</b></p>
+
+        </div>
+      </div>
+      
+
+    </mat-tab>
+  </mat-tab-group>
+</div>
